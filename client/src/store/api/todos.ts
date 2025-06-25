@@ -39,19 +39,12 @@ export const todosApi = createApi({
           })
         );
         try {
-          const { data: created } = await queryFulfilled;
-          dispatch(
-            todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
-              console.log(created);
-              const idx = draft.findIndex((t) => t.id === tempId);
-              if (idx !== -1) draft[idx] = created;
-            })
-          );
+          await queryFulfilled;
         } catch {
           patchResult.undo();
         }
       },
-      invalidatesTags: [Tags.TODO_LIST],
+      /* invalidatesTags: [Tags.TODO_LIST], */
     }),
     updateTodo: builder.mutation<TodoResponse, UpdateTodoPayload>({
       query: ({ id, data }) => ({
@@ -59,14 +52,39 @@ export const todosApi = createApi({
         method: HttpMethods.PUT,
         body: data,
       }),
-      invalidatesTags: [Tags.TODO_LIST],
+      async onQueryStarted({ id, data }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
+            const todo = draft.find((todo) => todo.id === id);
+            if (todo) Object.assign(todo, data);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+      /* invalidatesTags: [Tags.TODO_LIST], */
     }),
     deleteTodo: builder.mutation<TodoResponse["_id"], BaseTodoPayload>({
       query: ({ id }) => ({
         url: `${ApiKeys.TODOS}/${id}`,
         method: HttpMethods.DELETE,
       }),
-      invalidatesTags: [Tags.TODO_LIST],
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          todosApi.util.updateQueryData("getTodos", undefined, (draft) => {
+            return draft.filter((todo) => todo.id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+      /* invalidatesTags: [Tags.TODO_LIST], */
     }),
   }),
 });
