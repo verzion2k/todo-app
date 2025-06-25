@@ -1,21 +1,8 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Container,
-  TextField,
-  Button,
-  List,
-  ListItem,
-  Checkbox,
-  ListItemText,
-  IconButton,
-  Box,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { mockTodos } from "./types";
+import { AppBar, Toolbar, Typography, Container, Box } from "@mui/material";
+import { TodoList } from "../todoList/TodoList";
+import { AddTodo } from "../addTodo/AddTodo";
 
-export const TodoLayout = () => {
+export const TodoLayout: React.FC = () => {
   return (
     <Box
       display="flex"
@@ -31,26 +18,8 @@ export const TodoLayout = () => {
         </Toolbar>
       </AppBar>
       <Container>
-        <TextField
-          label="New Todo"
-          onChange={() => {}}
-          fullWidth
-          margin="normal"
-        />
-        <Button variant="contained" onClick={() => {}} fullWidth>
-          Add Todo
-        </Button>
-        <List>
-          {mockTodos.map((todo, index) => (
-            <ListItem key={index} dense>
-              <Checkbox onChange={() => {}} checked={todo.completed} />
-              <ListItemText primary={todo.text} />
-              <IconButton edge="end" onClick={() => {}}>
-                <DeleteIcon />
-              </IconButton>
-            </ListItem>
-          ))}
-        </List>
+        <AddTodo />
+        <TodoList />
       </Container>
     </Box>
   );
